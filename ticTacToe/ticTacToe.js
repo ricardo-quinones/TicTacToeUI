@@ -66,13 +66,20 @@
     });
   };
 
+  Game.prototype.resetBoard = function () {
+    this.board = this.makeBoard()
+  }
+
   Game.prototype.move = function (strCoords) {
     var pos = eval(strCoords);
 
     this.placeMark(pos);
 
     if (this.winner()) {
-      alert(this.player + " has won!!!")
+      alert(this.player + " has won!!!");
+      $('.x').removeClass('x').addClass('cell').text('');
+      $('.o').removeClass('o').addClass('cell').text('');
+      this.resetBoard();
     } else {
       this.switchPlayer();
     }
@@ -129,21 +136,6 @@
       this.diagonalWinner() || this.horizontalWinner() || this.verticalWinner()
     );
   };
-
-  Game.prototype.printBoard = function () {
-    var game = this;
-
-    game.board.forEach(function(row){
-      var first = row[0] == null ? " " : row[0];
-      var second = row[1] == null ? " " : row[1];
-      var third = row[2] == null ? " " : row[2];
-
-      console.log(first + " | " + second + " | " + third);
-    })
-  }
-
 })(this);
 
-
-// First we instantiate a new object with the this.TTT.Game() constructor function.
 var TTT = new this.TTT.Game();
