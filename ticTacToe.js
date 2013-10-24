@@ -75,8 +75,7 @@
     var pos = eval(strCoords);
 
     this.placeMark(pos);
-    console.log("This player " + this.player);
-    console.log("Other player " + this.otherPlayer());
+
     if (this.winner()) {
       $("#turn").toggle();
       $(".white_content").toggle();
@@ -92,7 +91,16 @@
         $("#play-again").removeClass("player-o");
         $(".click").addClass("x-bg-color");
       };
-    } else {
+    }
+    else if (_(_(this.board).flatten()).every()) {
+      $("#turn").toggle();
+      $(".white_content").toggle();
+      $(".black_overlay").toggle();
+      $("#winner").removeClass("player-o").text("Game is a draw.");
+      $("#play-again").addClass("player-o");
+      $(".click").removeClass("x-bg-color");
+    }
+    else {
       this.switchPlayer();
     }
     return true;
