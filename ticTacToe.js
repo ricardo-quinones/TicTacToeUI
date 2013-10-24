@@ -1,12 +1,16 @@
-// NB: This doesn't include any AI.
-
 (function (root) {
   var TTT = root.TTT = (root.TTT || {});
 
-  var Game = TTT.Game = function TT() {
+  var Game = TTT.Game = function () {
+    var self = this;
+
     this.player = Game.marks[0];
+    this.otherPlayer = function () {
+      return (this.player == "x" ? "o" : "x")
+    };
+
     this.board = this.makeBoard();
-  }
+  };
 
   Game.marks = ["x", "o"];
 
@@ -22,16 +26,11 @@
         return _.every(diagonalPositions, function (pos) {
           return game.board[pos[0]][pos[1]] === mark;
         });
-      }
+      };
 
-      var won = _.any(
-        [diagonalPositions1, diagonalPositions2],
-        didWinDiagonal
-      );
+      var won = _([diagonalPositions1, diagonalPositions2]).any(didWinDiagonal);
 
-      if (won) {
-        winner = mark;
-      }
+      if (won) winner = mark;
     });
 
     return winner;
@@ -67,19 +66,32 @@
   };
 
   Game.prototype.resetBoard = function () {
+    $('.x').removeClass('x').removeClass('x-bg-color').addClass('cell').text('');
+    $('.o').removeClass('o').removeClass('o-bg-color').addClass('cell').text('');
     this.board = this.makeBoard()
-  }
+  };
 
   Game.prototype.move = function (strCoords) {
     var pos = eval(strCoords);
 
     this.placeMark(pos);
-
+    console.log("This player " + this.player);
+    console.log("Other player " + this.otherPlayer());
     if (this.winner()) {
-      alert(this.player + " has won!!!");
-      $('.x').removeClass('x').addClass('cell').text('');
-      $('.o').removeClass('o').addClass('cell').text('');
-      this.resetBoard();
+      $("#turn").toggle();
+      $(".white_content").toggle();
+      $(".black_overlay").toggle();
+
+      if (this.player == "x") {
+        $("#winner").removeClass("player-o").text("player 1 has won!");
+        $("#play-again").addClass("player-o");
+        $(".click").removeClass("x-bg-color");
+      }
+      else {
+        $("#winner").addClass("player-o").text("player 2 has won!");
+        $("#play-again").removeClass("player-o");
+        $(".click").addClass("x-bg-color");
+      };
     } else {
       this.switchPlayer();
     }
@@ -93,19 +105,21 @@
   Game.prototype.switchPlayer = function () {
     if (this.player === Game.marks[0]) {
       this.player = Game.marks[1];
-    } else {
-      this.player = Game.marks[0];
+      $("#turn").addClass("player-o").text("player 2's turn");
     }
+    else {
+      this.player = Game.marks[0];
+      $("#turn").removeClass("player-o").text("player 1's turn");
+    };
   };
 
   Game.prototype.valid = function (strCoords) {
-    // Check to see if the co-ords are on the board and the spot is
-    // empty.
+    // Check to see if the co-ords are on the board and the spot is empty.
     var pos = eval(strCoords);
 
     function isInRange (pos) {
       return (0 <= pos) && (pos < 3);
-    }
+    };
 
     return _(pos).all(isInRange) && _.isNull(this.board[pos[0]][pos[1]]);
   };
@@ -123,9 +137,7 @@
         });
       });
 
-      if (won) {
-        winner = mark;
-      }
+      if (won) winner = mark;
     });
 
     return winner;
